@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+    <head>
+
+        <!-- Touch Icons - iOS and Android 2.1+ 180x180 pixels in size. --> 
+        <link rel="apple-touch-icon-precomposed" href="/static/apple-touch-icon-precomposed.png">
+
+        <!-- Firefox, Chrome, Safari, IE 11+ and Opera. 196x196 pixels in size. -->
+        <link rel="icon" href="static/favicon.png">
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+
+        <script type="module">
+          import Tags from "https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.1.4/tags.min.js";
+          Tags.init();
+        </script>
+
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.0.min.js"
+        crossorigin="anonymous"></script>
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.0.min.js"
+        crossorigin="anonymous"></script>
+
+        <title>Project Count</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+
+    </head>
+  <body class="background_img">
+
+    <div class="d-flex flex-column min-vh-100">
+
+
+    
+    <header class="d-flex  py-3">
+        <div class="container">
+        <h1 class="logo"><a style="color:white" href="{{url_for('Home') }}">Project Count (beta)</a></h1>
+        </div>
+
+      
+    </header>
+    <div class="container flex-grow-1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}     
+        {% endblock %}
+    </div>
+    
+
+
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+
+    
+ 
+    <footer class="text-center text-lg-start bg-light text-muted">
+      <div class="text-center p-4 justify-content-end" style="background-color: rgba(0, 0, 0, 0.05);">
+        <div class="container">
+        <div class="row"> 
+        <p class="col"></p>      
+
+        </div> 
+      </div>
+    </div>
+    </footer>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+openpyxl = "*"
+jupyter = "*"
+numpy = "*"
+thefuzz = "*"
+python-levenshtein-wheels = "*"
+opencv-contrib-python = "*"
+pytesseract = "*"
+imutils = "*"
+scipy = "*"
+xlsxwriter = "*"
+flask = "*"
+flask-sqlalchemy = "*"
+flask-wtf = "*"
+alembic = "*"
+flask-migrate = "*"
+bokeh = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

@@ -1,0 +1,116 @@
+
+  /*
+   * Formatting the header area
+   */
+  header {
+    background-color: #18245a;
+    height: 35px;
+    opacity: 1;
+    margin-bottom: 10px;
+    margin-top: 0px;
+  }
+  header h1.logo {
+    margin-top: -14px;
+    font-size: 1.7em;
+    color: #fff;
+
+  }
+
+  header h1.logo:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+  /*
+   * Centering the body content
+   */
+
+  div.home {
+    padding: 10px 0 30px 0;
+    background-color: #E6E6FA;
+    -webkit-border-radius: 6px;
+       -moz-border-radius: 6px;
+            border-radius: 6px;
+  }
+  div.about {
+    padding: 10px 0 30px 0;
+    background-color: #E6E6FA;
+    -webkit-border-radius: 6px;
+       -moz-border-radius: 6px;
+            border-radius: 6px;
+  }
+  h2 {
+    font-size: 3em;
+    margin-top: 40px;
+    text-align: center;
+    letter-spacing: -2px;
+  }
+  h3 {
+    font-size: 1.7em;
+    font-weight: 100;
+    margin-top: 30px;
+    text-align: center;
+    letter-spacing: -1px;
+    color: #999;
+  }
+
+  .background_img {
+    background-image: url("/static/Background_v1.jpg");
+    background-color: #cccccc;
+   
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+  }
+
+  .background_img_count {
+    background-image: url("/static/Background_count.jpg");
+    background-color: #cccccc;
+   
+    background-position: 30% 20%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+  }  
+
+  .zoom {
+    transition: transform .02s;
+  }
+
+  .zoom:hover {
+    transform: scale(1.02);
+  }
+  .menu {
+    float: right;
+    margin-top: 8px;
+  }
+  .menu li {
+    display: inline;
+  }
+  .menu li + li {
+    margin-left: 35px;
+  }
+  .menu li a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+  }
+
+  a {
+    color: black;
+    text-emphasis: none;
+    text-decoration: none;
+}
+
+  .home_page {
+    display:flex; 
+    flex-direction: row;
+    justify-content: center; 
+    align-items: center;
+  }
+
+  .center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+

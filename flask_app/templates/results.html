@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row bg-light mb-3">
+
+  <img src="{{ image_path }}" class="img-fluid col-sm rounded" alt="{{filename}}">
+
+<table class="table bg-light rounded border border-dark col-sm">
+  <!-- Table headers -->
+      <thead>
+          <tr>    
+          <th scope="col">Receipt item</th>
+          <th scope="col">Total</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Matched product</th>
+          <th scope="col">Footprint</th>
+          </tr>
+      </thead>
+        
+  <!-- For loop logic of jinja template -->
+  {% for item in results %}
+    
+  <!-- table rows -->
+  <tr>        
+      <td>{{item.description}}</td>
+      <td>{{item.total}}</td>
+      <td>{{item.quantity}}</td>
+      <td>{{item.Product}}</td>
+      <td>{{item.footprint}}</td>
+           
+    
+  {% endfor %}
+    
+  </tr>
+    
+  </table>
+
+  
+
+</div>
+
+<div class="row bg-light mb-3">
+
+  <div class="col-sm rounded ">
+  {{ script | safe }}
+  {{ div | safe }}
+  </div>
+  <div class="col-sm bg-light rounded">
+    <h1>Total footprint: {{ total }} Kg Co2e</h1>
+  </div>
+</div>
+{% endblock %}
+
