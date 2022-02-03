@@ -1,7 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 
-
+{% if error_message  %}
+<div class="invalid-feedback">
+    
+    <p>{{ error_message }}</p>
+    
+</div>
+{% endif %}
 
 <div class="content-section bg-light p-2 mb-5 rounded">
     <form method="POST" action="" enctype="multipart/form-data">
@@ -23,7 +29,7 @@
             </div>
         </fieldset>
         <div class="form-group mt-2">
-            {{ form.submit(class="btn btn-outline-info") }}
+            {{ form.submit(class="btn btn-info zoom") }}
         </div>
     </form>
 </div>

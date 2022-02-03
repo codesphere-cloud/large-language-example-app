@@ -14,6 +14,8 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
         <script type="module">
           import Tags from "https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.1.4/tags.min.js";
           Tags.init();
@@ -37,7 +39,14 @@
     
     <header class="d-flex  py-3">
         <div class="container">
-        <h1 class="logo"><a style="color:white" href="{{url_for('Home') }}">Project Count (beta)</a></h1>
+        <div class="row">
+        <h1 class="logo col-md-auto"><a style="color:white" href="{{url_for('Home') }}">Project Count (beta)</a></h1>
+        
+        <h1 class="logo col-md-auto zoom appear">1,</h1>
+        <h1 class="logo col-md-auto zoom appear">2,</h1>
+        <h1 class="logo col-md-auto zoom appear">3,</h1>
+        <h1 class="logo col-md-auto zoom appear">Ready?</h1>
+        </div>
         </div>
 
       

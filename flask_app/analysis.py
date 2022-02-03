@@ -6,7 +6,6 @@ import imutils
 import cv2
 import re
 import pandas as pd
-import json
 from thefuzz import process as fuzzy_process
 
 from itertools import tee, islice, chain
@@ -14,6 +13,14 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.palettes import Category10
 from bokeh.transform import cumsum
+
+import os
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.formrecognizer import DocumentAnalysisClient
+
+endpoint = os.environ.get('Azure_Form_Endpoint')
+key = os.environ.get('Azure_Form_Key')
+
 
 def pre_processing(image_input):
     orig = cv2.imread(image_input)
@@ -99,20 +106,47 @@ def ocr_receipt(receipt):
     grocery_input["clean"]=grocery_input["full"].replace(to_replace=r'\s[A|B|C]\b',value="€", regex=True)
     # Extract total
     grocery_input[["description","total"]]=grocery_input["clean"].str.split(r'[0-9,]+€', expand=True, n=1)
+    
+    
     grocery_input["total"]=grocery_input["clean"].str.extract(r'([0-9,]+€)')
     # Extract quantity
     grocery_input["quantity"] = grocery_input["clean"].str.extract(r'([0-9,]+[x]\b)')
     grocery_input["quantity"]=grocery_input["quantity"].fillna(1)
     grocery_input["quantity"]=grocery_input["quantity"].replace(to_replace=r"x",value="", regex=True)
-    grocery_input["quantity"]=pd.to_numeric(grocery_input["quantity"],downcast='integer')
+    grocery_input["quantity"]=grocery_input["quantity"].astype(int)
     
     grocery_input = grocery_input.drop(["full","clean"], axis=1)
+
+    print(grocery_input)
 
     return grocery_input
 
 
 
-#grocery_mapping = pd.read_excel(r"grocery_mapping.xlsx", engine="openpyxl")
+def azure_form_recognition(image_input):
+    with open(image_input, "rb") as fd:
+        document = fd.read()
+
+    document_analysis_client = DocumentAnalysisClient(
+        endpoint=endpoint, credential=AzureKeyCredential(key)
+    )
+
+    poller = document_analysis_client.begin_analyze_document("prebuilt-receipt", document)
+    receipts = poller.result()    
+    for idx, receipt in enumerate(receipts.documents):
+        if receipt.fields.get("Items"):
+            d = []
+            for idx, item in enumerate(receipt.fields.get("Items").value):
+                item_name = item.value.get("Name")
+                if item_name:
+                    d.append( {
+                        "description": item_name.value,
+                        "quantity" : [item.value.get("Quantity").value if item.value.get("Quantity") else 1][0],
+                        "total" : [item.value.get("Price").value if item.value.get("Price") else 1][0]
+                        }
+                    ) 
+            grocery_input =  pd.DataFrame(d)                                      
+    return  grocery_input   
 
 
 
@@ -148,29 +182,35 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
 
     # adding the scores column and sorting by its values
     scores.extend([0] * len(missing_indices))
-    merged_df["Similarity Ratio"] = pd.Series(scores) / 100
+    merged_df["similarity_ratio"] = pd.Series(scores) / 100
     #merged_df.sort_values("Similarity Ratio", ascending=False)
-
-    merged_df["footprint"]=merged_df["quantity"]*merged_df["Typical footprint"]
+    
+    merged_df["footprint"]=merged_df["quantity"]*merged_df["typical_footprint"]
     merged_df["footprint"] = merged_df["footprint"].round(0)
-    merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["Product", "description"])
-
     not_recognized = pd.DataFrame()
-    not_recognized["Product"] = merged_df.loc[merged_df['Typical footprint'].isnull()][["description"]]
+    not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]    
+    merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["product", "description"])
+    merged_df["quantity"]=merged_df["quantity"].astype(int)
+    merged_df["footprint"]=merged_df["footprint"].astype(int)
+
+
 
     return merged_df, not_recognized
 
 
 def prepare_pie(category):
-   
+
     category['angle'] = category['footprint']/category['footprint'].sum() * 2*pi
-    category['color'] = Category10[len(category)]
-    print(category)
-    pie = figure(title = "Category composition",toolbar_location=None , tools="hover", tooltips="@Category: @footprint g co2e")
+    try:
+        category['color'] = Category10[len(category)]
+    except:
+        category['color'] = Category10[3][0:len(category)]
+    #
+    pie = figure(title = "Category composition",toolbar_location=None , tools="hover", tooltips="@category: @footprint g co2e")
 
     pie.wedge(x=0, y=1, radius=0.6,
             start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
-            line_color="white", fill_color='color', legend_field='Category', source=category)
+            line_color="white", fill_color='color', legend_field='category', source=category)
     pie.axis.axis_label = None
     pie.axis.visible = False
     pie.grid.grid_line_color = None

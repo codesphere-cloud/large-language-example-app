@@ -4,7 +4,9 @@
 
   <img src="{{ image_path }}" class="img-fluid col-sm rounded" alt="{{filename}}">
 
-<table class="table bg-light rounded border border-dark col-sm">
+<div class="col-sm">
+  <h3 class="text-start">The following items were identified:</h3>
+<table class="table bg-light rounded border border-dark">
   <!-- Table headers -->
       <thead>
           <tr>    
@@ -12,7 +14,7 @@
           <th scope="col">Total</th>
           <th scope="col">Quantity</th>
           <th scope="col">Matched product</th>
-          <th scope="col">Footprint</th>
+          <th scope="col">CO₂Footprint</th>
           </tr>
       </thead>
         
@@ -24,7 +26,7 @@
       <td>{{item.description}}</td>
       <td>{{item.total}}</td>
       <td>{{item.quantity}}</td>
-      <td>{{item.Product}}</td>
+      <td>{{item.product}}</td>
       <td>{{item.footprint}}</td>
            
     
@@ -33,7 +35,7 @@
   </tr>
     
   </table>
-
+</div>
   
 
 </div>
@@ -46,6 +48,10 @@
   </div>
   <div class="col-sm bg-light rounded">
     <h1>Total footprint: {{ total }} Kg Co2e</h1>
+    <p></p>
+ 
+    <p><i class="bi-speedometer2" style="font-size: 2rem"></i> This is equivalent to driving an average car for {{car_eq}} kilometers.</p>
+    <p><i class="bi-water" style="font-size: 2rem"></i> This is equivalent to showering warm for approximately {{shower_eq}} minutes.</p>
   </div>
 </div>
 {% endblock %}

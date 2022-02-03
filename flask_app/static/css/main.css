@@ -80,6 +80,14 @@
   .zoom:hover {
     transform: scale(1.02);
   }
+
+  .appear {
+    opacity: 0;
+  }
+
+  .appear:hover {
+    opacity: 1;
+  }
   .menu {
     float: right;
     margin-top: 8px;

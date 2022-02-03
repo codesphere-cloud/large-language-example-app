@@ -22,20 +22,17 @@ args = vars(ap.parse_args())
 orig = cv2.imread(args["image"])
 image = orig.copy()
 image = imutils.resize(image, width=500)
-ratio = orig.shape[1] / float(image.shape[1])
 image =cv2.copyMakeBorder(image,10,10,10,10,cv2.BORDER_CONSTANT,value=[0,0,0])
+ratio = orig.shape[1] / float(image.shape[1])
 # convert the image to grayscale, blur it slightly, and then apply
 # edge detection
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (5, 5,), 0)
+blurred = gray
 edged = cv2.Canny(blurred, 75, 200)
 
 # check to see if we should show the output of our edge detection
 # procedure
-if args["debug"] > 0:
-	cv2.imshow("Input", image)
-	cv2.imshow("Edged", edged)
-	cv2.waitKey(0)
+
 
 # find contours in the edge map and sort them by size in descending
 # order
@@ -67,15 +64,18 @@ if receiptCnt is None:
 # check to see if we should draw the contour of the receipt on the
 # image and then display it to our screen
 if args["debug"] > 0:
-	output = image.copy()
-	cv2.drawContours(output, [receiptCnt], -1, (0, 255, 0), 2)
-	cv2.imshow("Receipt Outline", output)
-	cv2.waitKey(0)
+    output = image.copy()
+    cv2.drawContours(output, [receiptCnt], -1, (0, 255, 0), 2)
+    cv2.imshow("Input", image)
+    cv2.imshow("Edged", edged)   
+    cv2.imshow("Receipt Outline", output)
+    cv2.waitKey(0)
+
 # apply a four-point perspective transform to the *original* image to
 # obtain a top-down bird's-eye view of the receipt
 receipt = four_point_transform(orig, receiptCnt.reshape(4, 2) * ratio)
 # show transformed image
-cv2.imshow("Receipt Transform", imutils.resize(receipt, width=500))
+cv2.imshow("Receipt Transform", imutils.resize(receipt, width=540))
 cv2.waitKey(0)
 
 
@@ -189,15 +189,15 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
 
     
 # Merge the recognized items with the footprint data
-merged = match_and_merge(grocery_input,grocery_mapping,"description","Product",75).dropna(subset=["description"])
+merged = match_and_merge(grocery_input,grocery_mapping,"description","product",75).dropna(subset=["description"])
 # Calculate footprint
-merged["footprint"]=merged["quantity"]*merged["Typical footprint"]
+merged["footprint"]=merged["quantity"]*merged["typical_footprint"]
 merged = merged.drop(["index"], axis=1)
 # Calculate success measure
 total_items = len(merged.index)
 recognized_items = merged.count(0)[5]
 not_recognized = pd.DataFrame()
-not_recognized["Product"] = merged.loc[merged['Typical footprint'].isnull()][["description"]]
+not_recognized["product"] = merged.loc[merged['typical_footprint'].isnull()][["description"]]
 #merged.loc["Total"] = merged.sum(numeric_only=True)
 print(merged)
 
