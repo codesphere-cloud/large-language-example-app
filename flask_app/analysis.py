@@ -18,8 +18,8 @@ import os
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
-endpoint = os.environ.get('Azure_Form_Endpoint')
-key = os.environ.get('Azure_Form_Key')
+endpoint = os.environ.get('AZURE_FORM_ENDPOINT')
+key = os.environ.get('AZURE_FORM_KEY')
 
 
 def pre_processing(image_input):
@@ -141,8 +141,8 @@ def azure_form_recognition(image_input):
                 if item_name:
                     d.append( {
                         "description": item_name.value,
-                        "quantity" : [item.value.get("Quantity").value if item.value.get("Quantity") else 1][0],
-                        "total" : [item.value.get("Price").value if item.value.get("Price") else 1][0]
+                        "quantity" : [float(re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", item.value.get("Quantity").content)[0].replace(",",".")) if item.value.get("Quantity") else 1][0],
+                        "total" : [item.value.get("TotalPrice").value if item.value.get("TotalPrice") else 1][0]
                         }
                     ) 
             grocery_input =  pd.DataFrame(d)                                      
@@ -184,13 +184,15 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     scores.extend([0] * len(missing_indices))
     merged_df["similarity_ratio"] = pd.Series(scores) / 100
     #merged_df.sort_values("Similarity Ratio", ascending=False)
-    
+    # Detect if item is measured in kg
+    print(merged_df)
     merged_df["footprint"]=merged_df["quantity"]*merged_df["typical_footprint"]
     merged_df["footprint"] = merged_df["footprint"].round(0)
+    merged_df.loc[~(merged_df["quantity"] % 1 == 0),"footprint"] = merged_df["quantity"]*10*merged_df["footprint_per_100g"]
     not_recognized = pd.DataFrame()
     not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]    
     merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["product", "description"])
-    merged_df["quantity"]=merged_df["quantity"].astype(int)
+    #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
 
 
