@@ -185,13 +185,16 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     merged_df["similarity_ratio"] = pd.Series(scores) / 100
     #merged_df.sort_values("Similarity Ratio", ascending=False)
     # Detect if item is measured in kg
-    print(merged_df)
+
     merged_df["footprint"]=merged_df["quantity"]*merged_df["typical_footprint"]
     merged_df["footprint"] = merged_df["footprint"].round(0)
     merged_df.loc[~(merged_df["quantity"] % 1 == 0),"footprint"] = merged_df["quantity"]*10*merged_df["footprint_per_100g"]
     not_recognized = pd.DataFrame()
-    not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]    
-    merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["product", "description"])
+    not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]
+    merged_df["footprint"] = merged_df["footprint"].fillna(0)
+    merged_df["product"] = merged_df["product"].fillna("???")           
+    merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["description"])
+    print(merged_df)
     #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
 
@@ -201,13 +204,41 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
 
 
 def prepare_pie(category):
-
+    
     category['angle'] = category['footprint']/category['footprint'].sum() * 2*pi
+    #try:
+     #   category['color'] = Category10[len(category)]
+    #except:
+     #   category['color'] = Category10[3][0:len(category)]
+    #conditions = []
+    categories = list(category.index.values)
+    category['color'] = ""
     try:
-        category['color'] = Category10[len(category)]
-    except:
-        category['color'] = Category10[3][0:len(category)]
-    #
+        category.loc[["Milchprodukte / Eier"],"color"] =  Category10[5][0]
+    except KeyError:
+        pass
+
+    try:
+        category.loc[["Getränke"],"color"] =  Category10[5][1]
+    except KeyError:
+        pass    
+        
+    try:
+        category.loc[["Obst / Gemüse"],"color"] =  Category10[5][2]
+    except KeyError:
+        pass
+
+    try:
+        category.loc[["Fleisch / Fisch"],"color"] =  Category10[5][3]
+    except KeyError:
+        pass
+
+    try:
+        category.loc[["Sonstiges"],"color"] =  Category10[5][4]
+    except KeyError:
+        pass
+
+    print(category)
     pie = figure(title = "Category composition",toolbar_location=None , tools="hover", tooltips="@category: @footprint g co2e")
 
     pie.wedge(x=0, y=1, radius=0.6,
