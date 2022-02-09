@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import os 
 import pandas as pd
 from flask_app import app, db
-
+from PIL import Image
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -16,10 +16,11 @@ def Home():
     form = SubmitReceiptForm()
     if form.validate_on_submit():
         file = form.receipt.data
+        image = Image.open(file)
         filename = secure_filename(file.filename)
         assets_dir = os.path.join(os.path.dirname(app.instance_path),'flask_app' ,'static' ,'assets')    
         image_path = os.path.join(assets_dir, filename)
-        file.save(image_path)
+        image.save(image_path, format='JPEG', quality=40)
         receipt_request = Receipt(receipt_file = image_path)
         db.session.add(receipt_request)
         db.session.commit()

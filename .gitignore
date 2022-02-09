@@ -4,3 +4,7 @@
 env/
 
 rest/
+
+app.db
+
+not_recognized.xlsx
