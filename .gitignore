@@ -5,6 +5,8 @@ env/
 
 rest/
 
-app.db
+**/app.db
 
-not_recognized.xlsx
+/not_recognized.*
+
+receipt*
