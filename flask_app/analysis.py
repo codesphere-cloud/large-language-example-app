@@ -141,7 +141,7 @@ def azure_form_recognition(image_input):
                 if item_name:
                     d.append( {
                         "description": item_name.value,
-                        "quantity" : [float(re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", item.value.get("Quantity").content)[0].replace(",",".")) if item.value.get("Quantity") else 1][0],
+                        "quantity" : [float(re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", item.value.get("Quantity").content)[0].replace(",",".")) if item.value.get("Quantity") and item.value.get("Quantity").value !=None else 1][0],
                         "total" : [item.value.get("TotalPrice").value if item.value.get("TotalPrice") else 1][0]
                         }
                     ) 
@@ -194,7 +194,7 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     merged_df["footprint"] = merged_df["footprint"].fillna(0)
     merged_df["product"] = merged_df["product"].fillna("???")           
     merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["description"])
-    print(merged_df)
+    #print(merged_df)
     #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
 
@@ -238,8 +238,8 @@ def prepare_pie(category):
     except KeyError:
         pass
 
-    print(category)
-    pie = figure(title = "Category composition",toolbar_location=None , tools="hover", tooltips="@category: @footprint g co2e")
+
+    pie = figure(title = "Category composition",toolbar_location=None , tools="hover", tooltips="@category: @footprint g co2e", sizing_mode = "scale_width", aspect_ratio = 0.8)
 
     pie.wedge(x=0, y=1, radius=0.6,
             start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
@@ -247,6 +247,7 @@ def prepare_pie(category):
     pie.axis.axis_label = None
     pie.axis.visible = False
     pie.grid.grid_line_color = None
+    pie.add_layout(pie.legend[0], "below")
 
     """
     categories = category['Category']

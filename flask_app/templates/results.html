@@ -1,17 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="container">
 <div class="row bg-light mb-3">
 
   <img src="{{ image_path }}" class="img-fluid col-sm rounded" alt="{{filename}}">
 
 <div class="col-sm">
   <h3 class="text-start">The following items were identified:</h3>
-<table class="table bg-light rounded border border-dark">
+<div class="table-responsive"> 
+<table class="table table-sm table-striped table-hover bg-light rounded border border-dark">
   <!-- Table headers -->
       <thead>
           <tr>    
           <th scope="col">Receipt item</th>
-          <th scope="col">Total</th>
+          <!--<th scope="col">Total</th>-->
           <th scope="col">Quantity</th>
           <th scope="col">Matched product</th>
           <th scope="col">CO₂Footprint</th>
@@ -24,7 +26,7 @@
   <!-- table rows -->
   <tr>        
       <td>{{item.description}}</td>
-      <td>{{item.total}}</td>
+      <!--<td>{{item.total}}</td>-->
       <td>{{item.quantity}}</td>
       <td>{{item.product}}</td>
       <td>{{item.footprint}}</td>
@@ -35,14 +37,16 @@
   </tr>
     
   </table>
+</div> 
 </div>
   
 
 </div>
-
+</div>
+<div class="container">
 <div class="row bg-light mb-3">
 
-  <div class="col-sm rounded ">
+  <div class="col-sm rounded mw-100">
   {{ script | safe }}
   {{ div | safe }}
   </div>
@@ -53,6 +57,7 @@
     <p><i class="bi-speedometer2" style="font-size: 2rem"></i> This is equivalent to driving an average car for {{car_eq}} kilometers.</p>
     <p><i class="bi-water" style="font-size: 2rem"></i> This is equivalent to showering warm for approximately {{shower_eq}} minutes.</p>
   </div>
+</div>
 </div>
 {% endblock %}
 

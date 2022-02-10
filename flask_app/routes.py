@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import os 
 import pandas as pd
 from flask_app import app, db
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -17,6 +17,7 @@ def Home():
     if form.validate_on_submit():
         file = form.receipt.data
         image = Image.open(file)
+        image = ImageOps.exif_transpose(image)
         filename = secure_filename(file.filename)
         assets_dir = os.path.join(os.path.dirname(app.instance_path),'flask_app' ,'static' ,'assets')    
         image_path = os.path.join(assets_dir, filename)
@@ -64,7 +65,7 @@ def Home():
 
         # Get pie chart
         script, div = prepare_pie(category)
-
+        print(div)
         # Calculate total
         total = str(sum(category['footprint'])/1000).replace('.',',')
 
