@@ -65,7 +65,7 @@ def Home():
 
         # Get pie chart
         script, div = prepare_pie(category)
-        print(div)
+        
         # Calculate total
         total = str(sum(category['footprint'])/1000).replace('.',',')
 
@@ -75,6 +75,6 @@ def Home():
 
         pd.set_option('display.float_format','{:.0f}'.format)
         flash('Successfully analyzed receipt', 'success')
-        return render_template('results.html', results = results.to_dict(orient='records'), filename = str(file.filename), image_path = url_for('static', filename=f'assets/{filename}'), script = script, div = div, total = total, car_eq = car_eq, shower_eq = shower_eq)
+        return render_template('results.html', results = results.to_dict(orient='records'), filename = str(file.filename), image_path = url_for('static', filename=f'assets/{filename}'), script = script, div = div, total = total, car_eq = car_eq, shower_eq = shower_eq, form = form)
     return render_template('home.html', form = form)
 

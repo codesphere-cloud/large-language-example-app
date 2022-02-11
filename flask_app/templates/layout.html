@@ -14,6 +14,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
 
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
         <script type="module">
@@ -77,6 +78,7 @@
 
       
     </header>
+
     <div class="container flex-grow-1">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -97,8 +99,23 @@
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+   
+    <script>
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+      var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
 
-    
+        return new bootstrap.Popover(popoverTriggerEl)
+
+      })
+    </script>
+
+    <script>
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+
+    </script>
  
     <footer class="text-center text-lg-start bg-light text-muted">
       <div class="text-center p-4 justify-content-end" style="background-color: rgba(0, 0, 0, 0.05);">
@@ -111,5 +128,6 @@
     </div>
     </footer>
   </div>
+
   </body>
 </html>

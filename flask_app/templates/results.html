@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
+
+
 <div class="container">
 <div class="row bg-light mb-3">
 
@@ -14,9 +16,9 @@
           <tr>    
           <th scope="col">Receipt item</th>
           <!--<th scope="col">Total</th>-->
-          <th scope="col">Quantity</th>
+          <!--<th scope="col">Quantity</th>-->
           <th scope="col">Matched product</th>
-          <th scope="col">CO₂Footprint</th>
+          <th scope="col"><a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" title="Details:" data-bs-content="All numbers are estimated CO₂ equivalents in g." data-bs-container="body">CO₂Footprint</a></th>
           </tr>
       </thead>
         
@@ -24,13 +26,14 @@
   {% for item in results %}
     
   <!-- table rows -->
-  <tr>        
+  <tr>
+           
       <td>{{item.description}}</td>
       <!--<td>{{item.total}}</td>-->
-      <td>{{item.quantity}}</td>
+      <!--<td>{{item.quantity}}</td>-->
       <td>{{item.product}}</td>
-      <td>{{item.footprint}}</td>
-           
+      <td><a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="= {{item.quantity}} (quantity) * {{item.typical_footprint}} (typical footprint)">{{item.footprint}}</a></td>
+        
     
   {% endfor %}
     
@@ -59,5 +62,45 @@
   </div>
 </div>
 </div>
+
+
+
+<div class="content-section bg-light p-2 mb-5 rounded">
+  <form method="POST" action="" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Want to analyze another receipt?</legend>
+          <div class="form-group">
+              {{ form.receipt.label(class="form-control-label") }}
+              {% if form.receipt.errors %}
+                  <div class="input-group custom-file-button">
+                      <label class="input-group-text" for="upload1"><i class="bi bi-camera"></i></label>
+                      {{ form.receipt(class="form-control form-control-lg custom-file-button is-invalid", id="upload1") }}
+                  
+                  
+                  <div class="invalid-feedback">
+                      {% for error in form.receipt.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% else %}
+              <div class="input-group custom-file-button">
+                  <label class="input-group-text" for="upload1"><i class="bi bi-camera"></i></label>
+                  {{ form.receipt(class="form-control form-control-lg custom-file-button", id="upload1") }}
+              </div>
+              
+                  
+              {% endif %}
+          </div>
+      </fieldset>
+      <div class="form-group mt-2">
+          {{ form.submit(class="btn btn-info zoom") }}
+      </div>
+  </form>
+</div>
+
+
+
 {% endblock %}
 
