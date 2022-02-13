@@ -10,3 +10,5 @@ rest/
 /not_recognized.*
 
 receipt*
+
+.env

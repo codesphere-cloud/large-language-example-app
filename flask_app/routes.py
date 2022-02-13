@@ -1,9 +1,9 @@
-from flask import render_template, flash, Markup
+from flask import render_template, flash
 from flask.helpers import url_for
 from flask_app import db
 from flask_app.forms import SubmitReceiptForm
-from flask_app.models import Receipt
-from flask_app.analysis import pre_processing, ocr_receipt, match_and_merge, prepare_pie, azure_form_recognition
+from flask_app.models import Receipt, Results
+from flask_app.analysis import match_and_merge, prepare_pie, azure_form_recognition
 from werkzeug.utils import secure_filename
 import os 
 import pandas as pd

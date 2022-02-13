@@ -8,7 +8,7 @@
   <img src="{{ image_path }}" class="img-fluid col-sm rounded" alt="{{filename}}">
 
 <div class="col-sm">
-  <h3 class="text-start">The following items were identified:</h3>
+  <h3 class="text-start" style="margin-top: 30px; color: #999; text-align: center;">The following items were identified:</h3>
 <div class="table-responsive"> 
 <table class="table table-sm table-striped table-hover bg-light rounded border border-dark">
   <!-- Table headers -->
@@ -18,7 +18,7 @@
           <!--<th scope="col">Total</th>-->
           <!--<th scope="col">Quantity</th>-->
           <th scope="col">Matched product</th>
-          <th scope="col"><a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" title="Details:" data-bs-content="All numbers are estimated CO₂ equivalents in g." data-bs-container="body">CO₂Footprint</a></th>
+          <th scope="col"><a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="left" data-bs-title="Details:" data-bs-content="All numbers are estimated CO₂ equivalents in g." data-bs-container="body">CO₂Footprint</a></th>
           </tr>
       </thead>
         
@@ -32,7 +32,8 @@
       <!--<td>{{item.total}}</td>-->
       <!--<td>{{item.quantity}}</td>-->
       <td>{{item.product}}</td>
-      <td><a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="= {{item.quantity}} (quantity) * {{item.typical_footprint}} (typical footprint)">{{item.footprint}}</a></td>
+      <td><a tabindex="0" href="#" data-bs-toggle="popover" data-bs-trigger="focus"  data-bs-placement="left" data-bs-title="Details:" data-bs-content="= {{item.quantity}} (quantity) * {{item.typical_footprint}} (typical footprint)">{{item.footprint}} <i class="bi bi-info-circle"></i></a></td>
+      <!-- <td><a href="#"><i class="bi bi-pencil"></i></a></td> -->
         
     
   {% endfor %}
