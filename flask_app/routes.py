@@ -52,8 +52,9 @@ class AnalyzeReceipt(Resource):
         car_eq = str(round(sum(category['footprint'])/250,2)).replace('.',',')
         shower_eq = str(round(sum(category['footprint'])/196,2)).replace('.',',')
         print(results)
-        print(results.to_json(orient='split'))
-        return results.to_json(orient='split'), 201
+        print(results.to_dict(orient='split'))
+        output = results.to_dict(orient='split')
+        return output, 201
 
 api.add_resource(AnalyzeReceipt, '/Api')
 
