@@ -14,6 +14,7 @@ import base64
 from io import BytesIO
 from datetime import datetime
 import json
+import ast
 #from tempfile import NamedTemporaryFile
 
 parser = reqparse.RequestParser()
@@ -52,9 +53,10 @@ class AnalyzeReceipt(Resource):
         # Calculate car equivalent
         car_eq = str(round(sum(category['footprint'])/250,2)).replace('.',',')
         shower_eq = str(round(sum(category['footprint'])/196,2)).replace('.',',')
-        print(results)
-        print(results.to_dict(orient='dict'))
-        output = results.to_dict(orient='dict')
+        
+        
+        output = results["product"].to_list()
+        print(output)
         return output, 201
 
 api.add_resource(AnalyzeReceipt, '/Api')
