@@ -13,6 +13,7 @@ from flask_restful import Resource, reqparse
 import base64
 from io import BytesIO
 from datetime import datetime
+import json
 #from tempfile import NamedTemporaryFile
 
 parser = reqparse.RequestParser()
@@ -54,7 +55,7 @@ class AnalyzeReceipt(Resource):
         print(results)
         print(results.to_dict(orient='split'))
         output = results.to_dict(orient='split')
-        return output, 201
+        return json.dumps(output), 201
 
 api.add_resource(AnalyzeReceipt, '/Api')
 
