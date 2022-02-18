@@ -55,7 +55,7 @@ class AnalyzeReceipt(Resource):
         shower_eq = str(round(sum(category['footprint'])/196,2)).replace('.',',')
         
         
-        output = results["product"].to_list()
+        output = {"results": results["product"].to_list(), "footprint" : results["footprint"].to_list()}
         print(output)
         return output, 201
 
