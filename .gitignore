@@ -12,3 +12,5 @@ rest/
 receipt*
 
 .env
+
+flask_app/static/assets/
