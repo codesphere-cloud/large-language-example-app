@@ -39,7 +39,7 @@ class AnalyzeReceipt(Resource):
         # Match with footprint data
         results, missed_item = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
 
-
+        results = results.fillna(0)
 
         # Calculate category percentages
         category = results.groupby('category').agg({'footprint': 'sum'})
@@ -64,7 +64,7 @@ class AnalyzeReceipt(Resource):
             "typical_weight" : results["typical_weight"].to_list(),
             "category" : results["category"].to_list()
              }
-        #print(output)
+        print(output)
         return output, 201
 
 api.add_resource(AnalyzeReceipt, '/Api')
