@@ -100,7 +100,7 @@ def Home():
             results = match_and_merge(ocr_result,grocery_mapping,"description","product",80)
             
             results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
-            print(store)
+            #print(store)
             results.to_sql(name="results",con=db.engine, index=False, if_exists="append")
 
         # Output missed items
@@ -126,5 +126,5 @@ def Home():
         flash('Successfully analyzed receipt', 'success')
         return render_template('results.html', results = results.to_dict(orient='records'), filename = str(file.filename), image_path = url_for('static', filename=f'assets/{filename}'), script = script, div = div, total = total, car_eq = car_eq, shower_eq = shower_eq, form = form)
     return render_template('home.html', form = form)
-
+""
 

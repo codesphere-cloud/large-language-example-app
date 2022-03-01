@@ -136,6 +136,8 @@ def azure_form_recognition(image_input):
     for idx, receipt in enumerate(receipts.documents):
         if receipt.fields.get("MerchantName"):
             store = receipt.fields.get("MerchantName").value
+        else:
+            store="Unknown store"
         if receipt.fields.get("Items"):
             d = []
             for idx, item in enumerate(receipt.fields.get("Items").value):
