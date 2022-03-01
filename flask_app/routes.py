@@ -34,7 +34,7 @@ class AnalyzeReceipt(Resource):
 
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
-        ocr_result = azure_form_recognition(image_path)
+        ocr_result, store = azure_form_recognition(image_path)
         # Match with footprint data
         results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
 
@@ -51,6 +51,7 @@ class AnalyzeReceipt(Resource):
             "typical_weight" : results["typical_weight"].to_list(),
             "category" : results["category"].to_list(),
             "footprint_per_g": (results["footprint_per_100g"]/100).to_list(),
+            "store": store,
              }
         #print(output)
         return output, 201
@@ -93,13 +94,13 @@ def Home():
                 flash(Markup('It seems like our algorithm was unable to recognize the receipts structure or content, feel free to send us the picture via mail to <a href="mailto:receipt@project-count.com">receipt@project-count.com</a> we will get back to you as soon as possible.'), 'danger')
                 return render_template('home.html', form = form)
             """
-            ocr_result = azure_form_recognition(image_path)
+            ocr_result, store = azure_form_recognition(image_path)
 
             # Match with footprint data
-            results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
+            results = match_and_merge(ocr_result,grocery_mapping,"description","product",80)
             
             results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
-            #print(results)
+            print(store)
             results.to_sql(name="results",con=db.engine, index=False, if_exists="append")
 
         # Output missed items
