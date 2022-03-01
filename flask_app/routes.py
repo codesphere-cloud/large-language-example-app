@@ -36,7 +36,7 @@ class AnalyzeReceipt(Resource):
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
         ocr_result, store = azure_form_recognition(image_path)
         # Match with footprint data
-        results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
+        results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
 
         results = results.fillna(0)
 
