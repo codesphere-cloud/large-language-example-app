@@ -13,8 +13,7 @@ from flask_restful import Resource, reqparse
 import base64
 from io import BytesIO
 from datetime import datetime
-import json
-import ast
+
 #from tempfile import NamedTemporaryFile
 
 parser = reqparse.RequestParser()
@@ -37,23 +36,11 @@ class AnalyzeReceipt(Resource):
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
         ocr_result = azure_form_recognition(image_path)
         # Match with footprint data
-        results, missed_item = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
+        results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
 
         results = results.fillna(0)
 
-        # Calculate category percentages
-        category = results.groupby('category').agg({'footprint': 'sum'})
-
-        # Get pie chart
-        script, div = prepare_pie(category)
-        
-        # Calculate total
-        total = str(sum(category['footprint'])/1000).replace('.',',')
-
-        # Calculate car equivalent
-        car_eq = str(round(sum(category['footprint'])/250,2)).replace('.',',')
-        shower_eq = str(round(sum(category['footprint'])/196,2)).replace('.',',')
-        
+      
         
         output = {
             "results": results["product"].to_list(),
@@ -62,9 +49,10 @@ class AnalyzeReceipt(Resource):
             "quantity" : results["quantity"].to_list(),
             "total" : results["total"].to_list(),
             "typical_weight" : results["typical_weight"].to_list(),
-            "category" : results["category"].to_list()
+            "category" : results["category"].to_list(),
+            "footprint_per_g": (results["footprint_per_100g"]/100).to_list(),
              }
-        print(output)
+        #print(output)
         return output, 201
 
 api.add_resource(AnalyzeReceipt, '/Api')

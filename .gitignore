@@ -14,3 +14,5 @@ receipt*
 .env
 
 flask_app/static/assets/
+
+.pm/

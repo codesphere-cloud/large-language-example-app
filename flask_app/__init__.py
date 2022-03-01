@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_migrate import Migrate
 from flask_restful import Api
+import pandas as pd
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,5 +20,6 @@ app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB max-limit.
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
+
 
 from flask_app import routes, models

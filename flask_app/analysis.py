@@ -153,7 +153,8 @@ def azure_form_recognition(image_input):
 
 def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, cutoff: int = 80):
     # adding empty row
-    df2 = df2.append(pd.Series(dtype=np.float64), ignore_index=True)
+    df2 = pd.concat([pd.Series(dtype=np.float64), df2], ignore_index=True)
+
     index_of_empty = len(df2) - 1
 
     # matching
@@ -183,24 +184,24 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     # adding the scores column and sorting by its values
     scores.extend([0] * len(missing_indices))
     merged_df["similarity_ratio"] = pd.Series(scores) / 100
-    #merged_df.sort_values("Similarity Ratio", ascending=False)
+    
     # Detect if item is measured in kg
 
-    merged_df["footprint"]=merged_df["quantity"]*merged_df["typical_footprint"]
-    merged_df["footprint"] = merged_df["footprint"].round(0)
+    merged_df["footprint"]= (merged_df["quantity"]*merged_df["typical_footprint"]).round(0)
+    #merged_df["footprint"] = merged_df["footprint"].round(0)
     merged_df.loc[~(merged_df["quantity"] % 1 == 0),"footprint"] = merged_df["quantity"]*10*merged_df["footprint_per_100g"]
-    not_recognized = pd.DataFrame()
-    not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]
+    #not_recognized = pd.DataFrame()
+    #not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]
     merged_df["footprint"] = merged_df["footprint"].fillna(0)
     merged_df["product"] = merged_df["product"].fillna("???")           
     merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["description"])
-    #print(merged_df)
+    
     #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
 
 
 
-    return merged_df, not_recognized
+    return merged_df #, not_recognized
 
 
 def prepare_pie(category):
