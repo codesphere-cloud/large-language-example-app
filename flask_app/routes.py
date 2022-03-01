@@ -78,7 +78,7 @@ def Home():
 
         if '.xlsx' in filename:
             items = pd.read_excel(image_path)
-            results ,missed_item = match_and_merge(items,grocery_mapping,"description","product",75)
+            results = match_and_merge(items,grocery_mapping,"description","product",75)
 
         else:
             """
@@ -96,16 +96,17 @@ def Home():
             ocr_result = azure_form_recognition(image_path)
 
             # Match with footprint data
-            results, missed_item = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
+            results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
             
             results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
+            #print(results)
             results.to_sql(name="results",con=db.engine, index=False, if_exists="append")
 
         # Output missed items
 
-        writer2 = pd.ExcelWriter("not_recognized.xlsx", engine="openpyxl", mode="a", if_sheet_exists="replace")
-        missed_item.to_excel(writer2,index=False, sheet_name=filename.split(".",1)[0])
-        writer2.save()
+        #writer2 = pd.ExcelWriter("not_recognized.xlsx", engine="openpyxl", mode="a", if_sheet_exists="replace")
+        #missed_item.to_excel(writer2,index=False, sheet_name=filename.split(".",1)[0])
+        #writer2.save()
 
         # Calculate category percentages
         category = results.groupby('category').agg({'footprint': 'sum'})

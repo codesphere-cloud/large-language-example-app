@@ -25,3 +25,4 @@ class Results(db.Model):
     similarity_ratio = db.Column(db.Integer())
     footprint = db.Column(db.Integer())
 
+

@@ -198,6 +198,8 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     
     #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
+    #print(merged_df)
+    merged_df = merged_df.drop([0], axis=1)
 
 
 
