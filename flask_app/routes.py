@@ -97,7 +97,7 @@ def Home():
             ocr_result, store = azure_form_recognition(image_path)
 
             # Match with footprint data
-            results = match_and_merge(ocr_result,grocery_mapping,"description","product",80)
+            results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
             
             results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
             #print(store)

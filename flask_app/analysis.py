@@ -158,8 +158,10 @@ def azure_form_recognition(image_input):
 
 def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, cutoff: int = 80):
     # adding empty row
-    df2 = pd.concat([pd.Series(dtype=np.float64), df2], ignore_index=True)
-
+    df2 = df2.reindex(list(range(0, len(df2)+1))).reset_index(drop=True)
+    #df2 = pd.concat([pd.Series(dtype=np.float64).to_frame(), df2], axis=0)
+    #df2 = df2.drop([0], axis=1)
+    #print(df2)
     index_of_empty = len(df2) - 1
 
     # matching
@@ -185,11 +187,11 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
 
     # merge rows of dataframes
     merged_df = pd.concat([df1, ordered_df2], axis=1)
-
+    #merged_df = merged_df.drop([0], axis=1)
     # adding the scores column and sorting by its values
     scores.extend([0] * len(missing_indices))
     merged_df["similarity_ratio"] = pd.Series(scores) / 100
-    
+   
     # Detect if item is measured in kg
 
     merged_df["footprint"]= (merged_df["quantity"]*merged_df["typical_footprint"]).round(0)
@@ -204,7 +206,7 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     #merged_df["quantity"]=merged_df["quantity"].astype(int)
     merged_df["footprint"]=merged_df["footprint"].astype(int)
     #print(merged_df)
-    merged_df = merged_df.drop([0], axis=1)
+    
 
 
 
