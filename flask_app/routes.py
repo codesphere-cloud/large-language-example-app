@@ -53,11 +53,11 @@ class AnalyzeReceipt(Resource):
             "category" : results["category"].to_list(),
             "footprint_per_g": (results["footprint_per_100g"]/100).to_list(),
             "store": store,
-            "footprint_dairy" : category.iloc[:,0].get("Milchprodukte / Eier", 0),
-            "footprint_meat" : category.iloc[:,0].get("Fleisch / Fisch", 0),
-            "footprint_vegetables" : category.iloc[:,0].get("Obst / Gemüse", 0),
-            "footprint_drinks" : category.iloc[:,0].get("Getränke", 0),
-            "footprint_other" : category.iloc[:,0].get("Sonstiges", 0),   
+            "footprint_dairy" : int(category.iloc[:,0].get("Milchprodukte / Eier", 0)),
+            "footprint_meat" : int(category.iloc[:,0].get("Fleisch / Fisch", 0)),
+            "footprint_vegetables" : int(category.iloc[:,0].get("Obst / Gemüse", 0)),
+            "footprint_drinks" : int(category.iloc[:,0].get("Getränke", 0)),
+            "footprint_other" : int(category.iloc[:,0].get("Sonstiges", 0)),   
              }
         #print(output)
         return output, 201
