@@ -1,22 +1,17 @@
 from math import nan
 import numpy as np
 from aleph_alpha_client import AlephAlphaClient
-from itertools import combinations
 from itertools import islice
 import json
 import requests
 import pandas as pd
 from thefuzz import process as fuzzy_process
 from scipy.spatial.distance import cosine
+import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyMTYsInJvbGUiOiJDbGllbnQiLCJjcmVhdGVkIjoxNjQ5OTQwNDI3NDIzNTQ4MjA5fQ.sYvTpwtybMPXtODaR1K04bzkF9dAy3Yn-UYQWSHWdt4"
-)
+API_KEY = os.environ.get('ALEPH_KEY')
 model = "luminous-base"
-API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxNDg4LCJyb2xlIjoiQ2xpZW50IiwiY3JlYXRlZCI6MTY1NzI3MjcwMDAzNzI2NTkxOH0.YRCDlf9DyWT64q4SjqDvXM18sdEw2leyZ4eK97nF87g" # find your token here: https://app.aleph-alpha.com/profile 
-
-
+"""
 # This function takes a list of strings of any length and computes the similarity between any two strings in the list
 def embedd_mappings(product_list, model="luminous-base"):
 
@@ -48,46 +43,7 @@ def embedd_mappings(product_list, model="luminous-base"):
     with open(file, 'w') as f: 
         json.dump(embedding_dict, f)
 
-def find_match(embedding_dict, product_description):
-
-    last_layers = {
-        "luminous-base": "layer_40",
-        "luminous-extended": "layer_46"
-    }
-    model="luminous-extended"
-    # This gets all combinations of strings
-    #possible_combinations = combinations(list_of_strings, 2)
-    possible_combinations = [(product_description,product, index) for index, product in enumerate(embedding_dict.keys())]
-    
-    string_embedding = client.embed(
-        model = model,
-        prompt=product_description,
-        pooling=["mean"],
-        layers=[-1]
-    )
-    embedded_item ={}
-    embedded_item[product_description] = {"embedding": string_embedding}
-    embedded_item[product_description]["embedding_means"] = embedded_item[product_description]["embedding"]["embeddings"][last_layers[model]]["mean"]
-
-    
-    scores_dict = {}
-
-    # Loop through all possible combinations and compute the similarity between them.
-    #for combination in list(possible_combinations):
-    for combination in possible_combinations:
-        a = embedded_item[product_description]["embedding_means"]
-        b = embedding_dict[combination[1]]["embedding_means"]
-
-        scores_dict[f"{combination[1][:20]}"] = np.dot(a, b)/(np.linalg.norm(a)*np.linalg.norm(b)),combination[2]
-    
-    # sort by similarity score
-    scores_dict = {k: v for k, v in sorted(scores_dict.items(), key=lambda item: item[1], reverse=True)}
-    #print(scores_dict)
-    match = list(islice(scores_dict.items(), 1))
-    # unpack tuple
-    result = [(x,y,z) for x, (y,z) in match][0]
-    print(result)
-    return result
+"""
 
 
 def find_match_new(embeddings, product_description: str):
@@ -124,7 +80,7 @@ def find_match_new(embeddings, product_description: str):
 
     #print(cosine_similarities)
     #print("Best Match: " + max(cosine_similarities, key=cosine_similarities.get) + " Similarity: " + str(max(cosine_similarities.values())))
-    print(result)
+    #print(result)
     return result
 
 

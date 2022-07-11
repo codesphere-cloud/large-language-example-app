@@ -2,10 +2,10 @@ import requests
 from scipy.spatial.distance import cosine
 import json
 import pandas as pd
+import os 
 
 model = "luminous-base"
-API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxNDg4LCJyb2xlIjoiQ2xpZW50IiwiY3JlYXRlZCI6MTY1NzI3MjcwMDAzNzI2NTkxOH0.YRCDlf9DyWT64q4SjqDvXM18sdEw2leyZ4eK97nF87g" # find your token here: https://app.aleph-alpha.com/profile 
-
+API_KEY = os.environ.get('ALEPH_KEY')
 
 def create_embeddings(texts):
         

@@ -1,9 +1,9 @@
 import requests
 from scipy.spatial.distance import cosine
-
+import os
 
 model = "luminous-base"
-API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyMTYsInJvbGUiOiJDbGllbnQiLCJjcmVhdGVkIjoxNjQ5OTQwNDI3NDIzNTQ4MjA5fQ.sYvTpwtybMPXtODaR1K04bzkF9dAy3Yn-UYQWSHWdt4" # find your token here: https://app.aleph-alpha.com/profile 
+API_KEY = os.environ.get('ALEPH_KEY')
 
 texts = [
    "Auf dem Kassenzettel steht: G+G Mozarella",
