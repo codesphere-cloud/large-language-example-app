@@ -126,6 +126,7 @@ def ocr_receipt(receipt):
 def azure_form_recognition(image_input):
     with open(image_input, "rb") as fd:
         document = fd.read()
+    #document = image_input
 
     document_analysis_client = DocumentAnalysisClient(
         endpoint=endpoint, credential=AzureKeyCredential(key)
@@ -153,6 +154,37 @@ def azure_form_recognition(image_input):
 
     return  grocery_input, store   
 
+
+def azure_form_recognition_test(image_input):
+    #with open(image_input, "rb") as fd:
+    #    document = fd.read()
+    document = image_input
+
+    document_analysis_client = DocumentAnalysisClient(
+        endpoint=endpoint, credential=AzureKeyCredential(key)
+    )
+
+    poller = document_analysis_client.begin_analyze_document("prebuilt-receipt", document)
+    receipts = poller.result()    
+    for idx, receipt in enumerate(receipts.documents):
+        if receipt.fields.get("MerchantName"):
+            store = receipt.fields.get("MerchantName").value
+        else:
+            store="Unknown store"
+        if receipt.fields.get("Items"):
+            d = []
+            for idx, item in enumerate(receipt.fields.get("Items").value):
+                item_name = item.value.get("Name")
+                if item_name:
+                    d.append( {
+                        "description": item_name.value,
+                        "quantity" : [float(re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", item.value.get("Quantity").content)[0].replace(",",".")) if item.value.get("Quantity") and item.value.get("Quantity").value !=None else 1][0],
+                        "total" : [item.value.get("TotalPrice").value if item.value.get("TotalPrice") else 1][0]
+                        }
+                    ) 
+            grocery_input =  pd.DataFrame(d)
+
+    return  grocery_input, store   
 
 
 

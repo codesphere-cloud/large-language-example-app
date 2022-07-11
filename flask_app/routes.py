@@ -2,17 +2,19 @@ from flask import render_template, flash
 from flask.helpers import url_for
 from flask_app import db
 from flask_app.forms import SubmitReceiptForm
-from flask_app.models import Receipt, Results
-from flask_app.analysis import match_and_merge, prepare_pie, azure_form_recognition
+from flask_app.models import Receipt
+from flask_app.analysis import match_and_merge, prepare_pie, azure_form_recognition, azure_form_recognition_test
+from flask_app.embed import match_and_merge_ki
 from werkzeug.utils import secure_filename
-import os 
+import os
 import pandas as pd
 from flask_app import app, db, api
-from PIL import Image, ImageOps
+from PIL import Image
 from flask_restful import Resource, reqparse
 import base64
 from io import BytesIO
 from datetime import datetime
+import json
 
 #from tempfile import NamedTemporaryFile
 
@@ -70,16 +72,23 @@ def Home():
     form = SubmitReceiptForm()
     if form.validate_on_submit():
         file = form.receipt.data
-        image = Image.open(file)
-        image = ImageOps.exif_transpose(image)
+        #image = Image.open(file)
+        image_64 = base64.b64encode(file.read())
+        byte_data = base64.b64decode(image_64) 
+        #image = ImageOps.exif_transpose(image)
+        stream = BytesIO(byte_data)        
+        image = Image.open(stream)
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGB") 
         filename = secure_filename(file.filename)
         assets_dir = os.path.join(os.path.dirname(app.instance_path),'flask_app' ,'static' ,'assets')    
         image_path = os.path.join(assets_dir, filename)
-        image.save(image_path, format='JPEG', quality=40)
+        #image.save(image_path, format='JPEG', quality=40)
         receipt_request = Receipt(receipt_file = image_path)
         db.session.add(receipt_request)
         db.session.commit()
 
+    
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
 
@@ -100,14 +109,20 @@ def Home():
                 flash(Markup('It seems like our algorithm was unable to recognize the receipts structure or content, feel free to send us the picture via mail to <a href="mailto:receipt@project-count.com">receipt@project-count.com</a> we will get back to you as soon as possible.'), 'danger')
                 return render_template('home.html', form = form)
             """
-            ocr_result, store = azure_form_recognition(image_path)
+            ocr_result, store = azure_form_recognition_test(byte_data)
 
             # Match with footprint data
-            results = match_and_merge(ocr_result,grocery_mapping,"description","product",75)
-            
-            results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
+            #results = match_and_merge(ocr_result,grocery_mapping,"description","product",85)
+
+            # KI Test
+            ocr_result['description'] = ["Auf dem Kassenzettel steht: " + string for string in ocr_result['description']] 
+            with open('./search_embedding_dict.json', 'r') as f:
+                embeddings = json.load(f)
+            results = match_and_merge_ki(ocr_result,grocery_mapping,"description",embeddings)
+            #results["request_id"] = Receipt.query.filter(Receipt.receipt_file == image_path).first().id
+            results["description"] = [string[27:] for string in results["description"]]
             #print(store)
-            results.to_sql(name="results",con=db.engine, index=False, if_exists="append")
+            #results.to_sql(name="results",con=db.engine, index=False, if_exists="append")
 
         # Output missed items
 
@@ -139,3 +154,53 @@ def Home():
     return render_template('home.html', form = form)
 ""
 
+# For testing only - currently with aleph alpha KI
+
+class AnalyzeReceiptTest(Resource):
+    def post(self):
+        args = parser.parse_args()
+        
+        byte_data = base64.b64decode(args["image"]) 
+        #stream = BytesIO(byte_data)
+        
+        #img = Image.open(stream)
+        #filename = secure_filename(str(datetime.now()))
+        #assets_dir = os.path.join(os.path.dirname(app.instance_path),'flask_app' ,'static' ,'assets')    
+        #image_path = os.path.join(assets_dir, filename)
+        #img.save(image_path, format='PNG', quality=40)
+
+        # Load mapping table
+        grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
+        ocr_result, store = azure_form_recognition_test(byte_data)
+        ocr_result['description'] = ["Auf dem Kassenzettel steht: " + string for string in ocr_result['description']] 
+
+        # Match with footprint data
+        with open('./search_embedding_dict.json', 'r') as f:
+            embeddings = json.load(f)
+        results = match_and_merge_ki(ocr_result,grocery_mapping,"description",embeddings)
+
+        results = results.fillna(0)
+
+        
+        category = results.groupby('category').agg({'footprint': 'sum'})
+        
+        output = {
+            "results": results["product"].to_list(),
+            "footprint" : results["footprint"].to_list(),
+            "description" : results["description"].to_list(),
+            "quantity" : results["quantity"].to_list(),
+            "total" : results["total"].to_list(),
+            "typical_weight" : results["typical_weight"].to_list(),
+            "category" : results["category"].to_list(),
+            "footprint_per_g": (results["footprint_per_100g"]/100).to_list(),
+            "store": store,
+            "footprint_dairy" : int(category.iloc[:,0].get("Milchprodukte / Eier", 0)),
+            "footprint_meat" : int(category.iloc[:,0].get("Fleisch / Fisch", 0)),
+            "footprint_vegetables" : int(category.iloc[:,0].get("Obst / Gemüse", 0)),
+            "footprint_drinks" : int(category.iloc[:,0].get("Getränke", 0)),
+            "footprint_other" : int(category.iloc[:,0].get("Sonstiges", 0)),   
+             }
+        #print(output)
+        return output, 201
+
+api.add_resource(AnalyzeReceiptTest, '/ApiTest')
