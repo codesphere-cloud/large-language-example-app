@@ -64,7 +64,7 @@ class AnalyzeReceipt(Resource):
         #print(output)
         return output, 201
 
-api.add_resource(AnalyzeReceipt, '/Api')
+
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -203,4 +203,5 @@ class AnalyzeReceiptTest(Resource):
         #print(output)
         return output, 201
 
+api.add_resource(AnalyzeReceipt, '/Api')
 api.add_resource(AnalyzeReceiptTest, '/ApiTest')
