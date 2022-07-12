@@ -178,6 +178,7 @@ class AnalyzeReceiptTest(Resource):
         with open('./search_embedding_dict.json', 'r') as f:
             embeddings = json.load(f)
         results = match_and_merge_ki(ocr_result,grocery_mapping,"description",embeddings)
+        results["description"] = [string[27:] for string in results["description"]]        
 
         results = results.fillna(0)
 

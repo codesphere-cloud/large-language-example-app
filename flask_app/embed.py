@@ -137,7 +137,7 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, embeddin
     #print(merged_df)
     
     # Replace below threshold matches
-    cutoff = 0.75
+    cutoff = 0.5
     merged_df.loc[(merged_df["similarity_ratio"] < cutoff),"product"] = '???'
     merged_df.loc[(merged_df["similarity_ratio"] < cutoff),"footprint_per_100g"] = 0
     merged_df.loc[(merged_df["similarity_ratio"] < cutoff),"typical_weight"] = 0
