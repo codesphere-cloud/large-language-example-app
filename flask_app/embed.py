@@ -144,6 +144,9 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, embeddin
     merged_df.loc[(merged_df["similarity_ratio"] < cutoff),"typical_footprint"] = 0
     merged_df.loc[(merged_df["similarity_ratio"] < cutoff),"footprint"] = 0    
 
+    # Set standardized product descriptions
+    merged_df.loc[(~pd.isna(merged_df["value_from"])),"product"] = merged_df["value_from"]
+
 
     return merged_df #, not_recognized
 
