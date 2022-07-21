@@ -75,7 +75,7 @@ def find_match_new(embeddings, product_description: str):
         
         cosine_similarities[item] = 1 - cosine(embeddings_to_add[0], embeddings[item])
 
-    result = (max(cosine_similarities, key=cosine_similarities.get),max(cosine_similarities.values()),list(cosine_similarities.keys()).index(max(cosine_similarities, key=cosine_similarities.get)))
+    result = (max(cosine_similarities, key=cosine_similarities.get),max(cosine_similarities.values())*100,list(cosine_similarities.keys()).index(max(cosine_similarities, key=cosine_similarities.get)))
 
 
     #print(cosine_similarities)
@@ -149,6 +149,68 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, embeddin
 
 
     return merged_df #, not_recognized
+
+
+
+
+def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, embedding_dict, cutoff: int = 80):
+    # adding empty row
+    df2 = df2.reindex(list(range(0, len(df2)+1))).reset_index(drop=True)
+    #df2 = pd.concat([pd.Series(dtype=np.float64).to_frame(), df2], axis=0)
+    #df2 = df2.drop([0], axis=1)
+    #print(df2)
+    index_of_empty = len(df2) - 1
+
+    # matching
+    indexed_strings_dict = dict(enumerate(df2[col2]))
+    matched_indices = set()
+    ordered_indices = []
+    scores = []
+    for s1 in df1[col1]:
+        match = fuzzy_process.extractOne(
+            query=s1,
+            choices=indexed_strings_dict,
+            score_cutoff=cutoff
+        )
+        score, index = match[1:] if match is not None else find_match_new(embedding_dict,"Auf dem Kassenzettel steht: "+s1)[1:]
+        matched_indices.add(index)
+        ordered_indices.append(index)
+        scores.append(score)
+
+    # detect unmatched entries to be positioned at the end of the dataframe
+    missing_indices = [i for i in range(len(df2)) if i not in matched_indices]
+    ordered_indices.extend(missing_indices)
+    ordered_df2 = df2.iloc[ordered_indices].reset_index()
+
+    # merge rows of dataframes
+    merged_df = pd.concat([df1, ordered_df2], axis=1)
+    #merged_df = merged_df.drop([0], axis=1)
+    # adding the scores column and sorting by its values
+    scores.extend([0] * len(missing_indices))
+    merged_df["similarity_ratio"] = pd.Series(scores) / 100
+   
+    # Detect if item is measured in kg
+
+    merged_df["footprint"]= (merged_df["quantity"]*merged_df["typical_footprint"]).round(0)
+    #merged_df["footprint"] = merged_df["footprint"].round(0)
+    merged_df.loc[~(merged_df["quantity"] % 1 == 0),"footprint"] = merged_df["quantity"]*10*merged_df["footprint_per_100g"]
+    #not_recognized = pd.DataFrame()
+    #not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]
+    merged_df["footprint"] = merged_df["footprint"].fillna(0)
+    merged_df["product"] = merged_df["product"].fillna("???")           
+    merged_df = merged_df.drop(["index"], axis=1).dropna(subset=["description"])
+    
+    #merged_df["quantity"]=merged_df["quantity"].astype(int)
+    merged_df["footprint"]=merged_df["footprint"].astype(int)
+    #print(merged_df)
+    
+    # Set standardized product descriptions
+    merged_df.loc[(~pd.isna(merged_df["value_from"])),"product"] = merged_df["value_from"]    
+
+
+
+    return merged_df #, not_recognized
+
 
 """
 grocery_mapping = pd.read_excel("grocery_mapping.xlsx", engine="openpyxl")

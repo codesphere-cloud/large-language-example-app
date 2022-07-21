@@ -207,6 +207,7 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
             choices=indexed_strings_dict,
             score_cutoff=cutoff
         )
+        
         score, index = match[1:] if match is not None else (0.0, index_of_empty)
         matched_indices.add(index)
         ordered_indices.append(index)
