@@ -46,7 +46,7 @@ def get_search_results(input_string: str, df2, col2: str, embeddings, cutoff_lev
             "footprint_per_g":  int(result[4]),
             "typical_weight" : int(result[5]),
             "footprint" : int(result[6]),
-            "category" :  result[8],
+            "category" :  "n/a" if pd.isna(result[8]) else result[8],
                      
         }
         return output
