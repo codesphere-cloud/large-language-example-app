@@ -211,16 +211,16 @@ class AnalyzeReceiptTest(Resource):
 
 
 search_parser = reqparse.RequestParser()
-search_parser.add_argument('query', help='utf-8 encoded string', location='form')
+search_parser.add_argument('query', type=str, help='utf-8 encoded string',location='args')
 
 
 
 class Search(Resource):
     def get(self):
         args = search_parser.parse_args()
+        #print(args)
+        query = args["query"]
         
-        query = str(args["query"])
-        #print(query)
 
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
@@ -234,7 +234,7 @@ class Search(Resource):
         
 
        
-        print(result)
+        #print(result)
         return result, 201
 
 
