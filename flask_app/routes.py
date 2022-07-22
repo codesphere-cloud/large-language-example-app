@@ -219,8 +219,8 @@ class Search(Resource):
     def get(self):
         args = search_parser.parse_args()
         
-        query = args["query"]
-        print(query)
+        query = str(args["query"])
+        #print(query)
 
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
