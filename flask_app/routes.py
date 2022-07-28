@@ -1,20 +1,19 @@
 from flask import render_template, flash
 from flask.helpers import url_for
-from flask_app import db
+
 from flask_app.forms import SubmitReceiptForm
-from flask_app.models import Receipt
+
 from flask_app.analysis import match_and_merge, prepare_pie, azure_form_recognition, azure_form_recognition_test
 from flask_app.embed import match_and_merge_ki, match_and_merge_combined
 from flask_app.search import get_search_results
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
-from flask_app import app, db, api
-from PIL import Image
+from flask_app import app, api
+
 from flask_restful import Resource, reqparse
 import base64
-from io import BytesIO
-from datetime import datetime
+
 import json
 
 #from tempfile import NamedTemporaryFile
@@ -45,7 +44,7 @@ class AnalyzeReceipt(Resource):
 
         with open('./search_embedding_dict.json', 'r') as f:
             embeddings = json.load(f)
-        results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,75)
+        results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,65)
 
 
         results = results.fillna(0)
