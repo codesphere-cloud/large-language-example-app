@@ -153,7 +153,7 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, embeddin
 
 
 
-def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, embedding_dict, cutoff: int = 80):
+def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, embedding_dict, cutoff: int = 80, cutoff_ai: int = 80):
     # adding empty row
     df2 = df2.reindex(list(range(0, len(df2)+1))).reset_index(drop=True)
     #df2 = pd.concat([pd.Series(dtype=np.float64).to_frame(), df2], axis=0)
@@ -173,6 +173,8 @@ def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, co
             score_cutoff=cutoff
         )
         score, index = match[1:] if match is not None else find_match_new(embedding_dict,"Auf dem Kassenzettel steht: "+s1)[1:]
+        if score < cutoff_ai:
+            index = index_of_empty 
         matched_indices.add(index)
         ordered_indices.append(index)
         scores.append(score)

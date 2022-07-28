@@ -124,9 +124,9 @@ def ocr_receipt(receipt):
 
 
 def azure_form_recognition(image_input):
-    with open(image_input, "rb") as fd:
-        document = fd.read()
-    #document = image_input
+    #with open(image_input, "rb") as fd:
+    #    document = fd.read()
+    document = image_input
 
     document_analysis_client = DocumentAnalysisClient(
         endpoint=endpoint, credential=AzureKeyCredential(key)

@@ -28,17 +28,17 @@ class AnalyzeReceipt(Resource):
         args = parser.parse_args()
         
         byte_data = base64.b64decode(args["image"]) 
-        stream = BytesIO(byte_data)
+        """stream = BytesIO(byte_data)
         
         img = Image.open(stream)
         filename = secure_filename(str(datetime.now()))
         assets_dir = os.path.join(os.path.dirname(app.instance_path),'flask_app' ,'static' ,'assets')    
         image_path = os.path.join(assets_dir, filename)
         img.save(image_path, format='JPEG', quality=40)
-
+        """
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
-        ocr_result, store = azure_form_recognition(image_path)
+        ocr_result, store = azure_form_recognition(byte_data)
         # Match with footprint data
         results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
 
@@ -120,7 +120,7 @@ def Home():
             #ocr_result['description'] = ["Auf dem Kassenzettel steht: " + string for string in ocr_result['description']] 
             with open('./search_embedding_dict.json', 'r') as f:
                 embeddings = json.load(f)
-            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,90)
+            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,75)
 
             #results["description"] = [string[27:] for string in results["description"]]
             #print(store)
