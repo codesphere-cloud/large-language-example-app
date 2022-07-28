@@ -40,7 +40,13 @@ class AnalyzeReceipt(Resource):
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
         ocr_result, store = azure_form_recognition(byte_data)
         # Match with footprint data
-        results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
+        # results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
+
+
+        with open('./search_embedding_dict.json', 'r') as f:
+            embeddings = json.load(f)
+        results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,75)
+
 
         results = results.fillna(0)
 
