@@ -101,7 +101,7 @@ def Home():
 
         if '.xlsx' in filename:
             items = pd.read_excel(image_path)
-            results = match_and_merge(items,grocery_mapping,"description","product",75)
+            results = match_and_merge(items,grocery_mapping,"description","product",60)
 
         else:
             """
@@ -125,7 +125,7 @@ def Home():
             #ocr_result['description'] = ["Auf dem Kassenzettel steht: " + string for string in ocr_result['description']] 
             with open('./search_embedding_dict.json', 'r') as f:
                 embeddings = json.load(f)
-            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,75)
+            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
 
             #results["description"] = [string[27:] for string in results["description"]]
             #print(store)
