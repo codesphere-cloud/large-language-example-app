@@ -38,13 +38,16 @@ class AnalyzeReceipt(Resource):
         # Load mapping table
         grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
         ocr_result, store = azure_form_recognition(byte_data)
+        
+        
+        #with open('./search_embedding_dict.json', 'r') as f:
+           # embeddings = json.load(f)
+        #results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
+        
         # Match with footprint data
-        # results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
+        results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
 
 
-        with open('./search_embedding_dict.json', 'r') as f:
-            embeddings = json.load(f)
-        results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
 
 
         results = results.fillna(0)
@@ -101,8 +104,10 @@ def Home():
 
         if '.xlsx' in filename:
             items = pd.read_excel(image_path)
-            results = match_and_merge(items,grocery_mapping,"description","product",60)
-
+            #results = match_and_merge(items,grocery_mapping,"description","product",60)
+            with open('./search_embedding_dict.json', 'r') as f:
+                embeddings = json.load(f)
+            results = match_and_merge_combined(items,grocery_mapping,"description","product",embeddings,88,55)
         else:
             """
             # Old version without azure:
@@ -121,11 +126,21 @@ def Home():
             # Match with footprint data
             #results = match_and_merge(ocr_result,grocery_mapping,"description","product",90)
 
+
+            try:
+                with open('./search_embedding_dict.json', 'r') as f:
+                    embeddings = json.load(f)
+                results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
+            except:
+                    
+                # Match with footprint data
+                results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
+
             # KI Test
             #ocr_result['description'] = ["Auf dem Kassenzettel steht: " + string for string in ocr_result['description']] 
-            with open('./search_embedding_dict.json', 'r') as f:
-                embeddings = json.load(f)
-            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
+            #with open('./search_embedding_dict.json', 'r') as f:
+            #    embeddings = json.load(f)
+            #results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
 
             #results["description"] = [string[27:] for string in results["description"]]
             #print(store)
