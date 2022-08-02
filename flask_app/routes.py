@@ -40,12 +40,14 @@ class AnalyzeReceipt(Resource):
         ocr_result, store = azure_form_recognition(byte_data)
         
         
-        #with open('./search_embedding_dict.json', 'r') as f:
-           # embeddings = json.load(f)
-        #results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
-        
-        # Match with footprint data
-        results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
+        try:
+            with open('./search_embedding_dict.json', 'r') as f:
+                embeddings = json.load(f)
+            results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
+        except:
+                
+            # Match with footprint data
+            results = match_and_merge(ocr_result,grocery_mapping,"description","product",83)
 
 
 
