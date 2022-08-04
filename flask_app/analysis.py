@@ -230,6 +230,8 @@ def match_and_merge(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, 
     merged_df["footprint"]= (merged_df["quantity"]*merged_df["typical_footprint"]).round(0)
     #merged_df["footprint"] = merged_df["footprint"].round(0)
     merged_df.loc[~(merged_df["quantity"] % 1 == 0),"footprint"] = merged_df["quantity"]*10*merged_df["footprint_per_100g"]
+    merged_df.loc[~(merged_df["quantity"] % 1 == 0),"typical_weight"] = merged_df["quantity"]*1000
+    merged_df.loc[~(merged_df["quantity"] % 1 == 0),"quantity"] = 1    
     #not_recognized = pd.DataFrame()
     #not_recognized["product"] = merged_df.loc[merged_df['typical_footprint'].isnull()][["description"]]
     merged_df["footprint"] = merged_df["footprint"].fillna(0)
