@@ -42,6 +42,38 @@ def create_embeddings(texts):
 #create_embeddings(texts)
 
 
+# new Aleph Endpoint embeddings
+
+def create_semantic_embeddings(texts):
+        
+    embeddings = {}
+
+    for txt in texts:
+        response = requests.post(
+            "https://api.aleph-alpha.com/semantic_embed",
+            headers={
+                "Authorization": f"Bearer {API_KEY}",
+                "User-Agent": "Aleph-Alpha-Python-Client-1.4.2",
+            },
+            json={
+                "model": model,
+                "prompt": txt,
+                "representation": "symmetric",
+                "compress_to_size": 128,
+            },
+        )
+        result = response.json()
+        print(result)
+        embeddings[txt] = result["embedding"]
+
+    file = './semantic_embedding_dict.json'
+
+    with open(file, 'w') as f: 
+        json.dump(embeddings, f)
+
+#grocery_mapping = pd.read_excel("grocery_mapping.xlsx", engine="openpyxl")
+#texts = ["Auf dem Kassenzettel steht: " + str(product) for product in grocery_mapping["product"]]
+#create_semantic_embeddings(texts)
 
 def find_match(embeddings, product_description):
     embeddings_to_add = []
@@ -78,11 +110,45 @@ def find_match(embeddings, product_description):
     print(result)
     return result
 
+
+def find_match_semantic(embeddings, product_description):
+    embeddings_to_add = []
+
+
+    response = requests.post(
+        "https://api.aleph-alpha.com/semantic_embed",
+        headers={
+            "Authorization": f"Bearer {API_KEY}",
+            "User-Agent": "Aleph-Alpha-Python-Client-1.4.2",
+        },
+        json={
+            "model": model,
+            "prompt": product_description,
+            "representation": "symmetric",
+            "compress_to_size": 128,
+        },
+    )
+    result = response.json()
+    embeddings_to_add.append(result["embedding"])    
+
+    #print(len(embeddings_to_add))
+    #print(len(embeddings))
+    cosine_similarities = {}
+    for item in embeddings:
+        
+        cosine_similarities[item] = 1 - cosine(embeddings_to_add[0], embeddings[item])
+
+    result = (max(cosine_similarities, key=cosine_similarities.get),max(cosine_similarities.values()),list(cosine_similarities.keys()).index(max(cosine_similarities, key=cosine_similarities.get)))
+    #print(cosine_similarities)
+    #print("Best Match: " + max(cosine_similarities, key=cosine_similarities.get) + " Similarity: " + str(max(cosine_similarities.values())))
+    #print(result)
+    return result
+
 test_string = "Auf dem Kassenzettel steht: hack gemischt"
-with open('./search_embedding_dict.json', 'r') as f:
+with open('./semantic_embedding_dict.json', 'r') as f:
     embeddings = json.load(f)
 
-#find_match(embeddings, test_string)
+find_match_semantic(embeddings, test_string)
 
 
 
@@ -103,7 +169,7 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: st
     scores = []
     for s1 in df1[col1]:
        
-        match = find_match(embedding_dict,s1)
+        match = find_match_semantic(embedding_dict,s1)
         score, index = match[1:]
         matched_indices.add(index)
         ordered_indices.append(index)
@@ -159,7 +225,7 @@ list2 = ["Auf dem Kassenzettel steht: " + string for string in list1]
 quantity = [1,1,1,1,1,1,1]
 total = [1,1,1,1,1,1,1]
 grocery_mapping = pd.read_excel("grocery_mapping.xlsx", engine="openpyxl")
-ocr_result = pd.DataFrame(texts, columns=["description"]) 
+ocr_result = pd.DataFrame(list2, columns=["description"]) 
 ocr_result['quantity']=quantity
 ocr_result['total']=total
 results = match_and_merge_ki(ocr_result,grocery_mapping,"description","product",embeddings,75)

@@ -84,6 +84,40 @@ def find_match_new(embeddings, product_description: str):
     return result
 
 
+def find_match_semantic(embeddings, product_description: str):
+    embeddings_to_add = []
+
+
+    response = requests.post(
+        "https://api.aleph-alpha.com/semantic_embed",
+        headers={
+            "Authorization": f"Bearer {API_KEY}",
+            "User-Agent": "Aleph-Alpha-Python-Client-1.4.2",
+        },
+        json={
+            "model": model,
+            "prompt": product_description,
+            "representation": "symmetric",
+            "compress_to_size": 128,
+        },
+    )
+    result = response.json()
+    embeddings_to_add.append(result["embedding"])    
+    #print(embeddings_to_add[0])
+    #print(len(embeddings_to_add))
+    #print(len(embeddings))
+    cosine_similarities = {}
+    for item in embeddings:
+        
+        cosine_similarities[item] = 1 - cosine(embeddings_to_add[0], embeddings[item])
+
+    result = (max(cosine_similarities, key=cosine_similarities.get),max(cosine_similarities.values())*100,list(cosine_similarities.keys()).index(max(cosine_similarities, key=cosine_similarities.get)))
+
+
+    #print(cosine_similarities)
+    #print("Best Match: " + max(cosine_similarities, key=cosine_similarities.get) + " Similarity: " + str(max(cosine_similarities.values())))
+    #print(result)
+    return result
 
 
 def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, embedding_dict):
