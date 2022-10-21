@@ -130,7 +130,7 @@ def Home():
 
 
             try:
-                with open('./search_embedding_dict.json', 'r') as f:
+                with open('./semantic_embedding_dict.json', 'r') as f:
                     embeddings = json.load(f)
                 results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
             except:

@@ -206,7 +206,7 @@ def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, co
             choices=indexed_strings_dict,
             score_cutoff=cutoff
         )
-        score, index = match[1:] if match is not None else find_match_new(embedding_dict,"Auf dem Kassenzettel steht: "+s1)[1:]
+        score, index = match[1:] if match is not None else find_match_semantic(embedding_dict,"Auf dem Kassenzettel steht: "+s1)[1:]
         if score < cutoff_ai:
             index = index_of_empty 
         matched_indices.add(index)
