@@ -1,6 +1,6 @@
 from thefuzz import process as fuzzy_process
 from flask_app import embed
-from flask_app.embed import find_match_new
+from flask_app.embed import find_match_semantic
 import pandas as pd
 
 
@@ -31,7 +31,7 @@ def get_search_results(input_string: str, df2, col2: str, embeddings, cutoff_lev
         return output
 
     else:
-        match = find_match_new(embeddings,input_string)
+        match = find_match_semantic(embeddings,input_string)
         match = (match[0][27:], match[1], match[2])
 
         result = match if match[1] > (cutoff_ai) else ('???',match[1],index_of_empty)

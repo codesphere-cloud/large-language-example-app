@@ -250,7 +250,7 @@ class Search(Resource):
 
 
         # Match with footprint data
-        with open('./search_embedding_dict.json', 'r') as f:
+        with open('./semantic_embedding_dict.json', 'r') as f:
             embeddings = json.load(f)
         result = get_search_results(query,grocery_mapping,"product",embeddings,92,50)
         
