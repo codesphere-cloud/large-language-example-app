@@ -72,8 +72,13 @@ def create_semantic_embeddings(texts):
         json.dump(embeddings, f)
 
 #grocery_mapping = pd.read_excel("grocery_mapping.xlsx", engine="openpyxl")
-#texts = ["Auf dem Kassenzettel steht: " + str(product) for product in grocery_mapping["product"]]
+#texts = ["Lebensmittel", "Drogerie", "Baumarkt"]
 #create_semantic_embeddings(texts)
+
+# Initial Mappings new enpoint
+grocery_mapping = pd.read_excel("grocery_mapping.xlsx", engine="openpyxl")
+texts = ["Auf dem Kassenzettel steht: " + str(product) for product in grocery_mapping["product"]]
+create_semantic_embeddings(texts)
 
 def find_match(embeddings, product_description):
     embeddings_to_add = []
@@ -141,14 +146,14 @@ def find_match_semantic(embeddings, product_description):
     result = (max(cosine_similarities, key=cosine_similarities.get),max(cosine_similarities.values()),list(cosine_similarities.keys()).index(max(cosine_similarities, key=cosine_similarities.get)))
     #print(cosine_similarities)
     #print("Best Match: " + max(cosine_similarities, key=cosine_similarities.get) + " Similarity: " + str(max(cosine_similarities.values())))
-    #print(result)
+    print(result)
     return result
 
-test_string = "Auf dem Kassenzettel steht: hack gemischt"
-with open('./semantic_embedding_dict.json', 'r') as f:
-    embeddings = json.load(f)
+#test_string = "FYB Profi-Makeup"
+#with open('./classification_embedding_dict.json', 'r') as f:
+#    embeddings = json.load(f)
 
-find_match_semantic(embeddings, test_string)
+#find_match_semantic(embeddings, test_string)
 
 
 
@@ -208,7 +213,7 @@ def match_and_merge_ki(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: st
 
     return merged_df #, not_recognized
 
-
+"""
 texts = [
    "Auf dem Kassenzettel steht: Extra Prof. 2x 14 S",
    "Auf dem Kassenzettel steht: Mozzarella",
@@ -235,7 +240,7 @@ print(results)
 """
 
 
-
+"""
 
 texts = [
    "Auf dem Kassenzettel steht: Extra Prof. 2x 14 S",
