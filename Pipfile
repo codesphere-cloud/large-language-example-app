@@ -21,7 +21,7 @@ flask-wtf = "*"
 alembic = "*"
 flask-migrate = "*"
 bokeh = "*"
-azure-ai-formrecognizer = "==3.2.0b2"
+azure-ai-formrecognizer = "*"
 flask-restful = "*"
 aleph-alpha-client = "*"
 

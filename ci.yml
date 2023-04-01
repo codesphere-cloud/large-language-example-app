@@ -1,0 +1,18 @@
+prepare:
+  # Put your commands here.
+  steps:
+  - name: "Install dependencies"
+    command: "pipenv sync"
+
+
+test:
+  # Put your commands here.
+  steps:
+  - name: "Unit Tests"
+    command: ""
+
+run:
+  # Put your commands here.
+  steps:
+  - name: "Run"
+    command: "pipenv run python run2.py"

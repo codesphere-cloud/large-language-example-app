@@ -133,7 +133,7 @@ def azure_form_recognition(image_input):
     )
 
     poller = document_analysis_client.begin_analyze_document("prebuilt-receipt", document)
-    receipts = poller.result()    
+    receipts = poller.result()
     for idx, receipt in enumerate(receipts.documents):
         if receipt.fields.get("MerchantName"):
             store = receipt.fields.get("MerchantName").value
@@ -142,7 +142,7 @@ def azure_form_recognition(image_input):
         if receipt.fields.get("Items"):
             d = []
             for idx, item in enumerate(receipt.fields.get("Items").value):
-                item_name = item.value.get("Name")
+                item_name = item.value.get("Description")
                 if item_name:
                     d.append( {
                         "description": item_name.value,
