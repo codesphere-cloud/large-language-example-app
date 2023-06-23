@@ -5,7 +5,7 @@
 <div class="container">
 <div class="row bg-light mb-3">
 
-  <img src="{{ image_path }}" class="img-fluid col-sm rounded" alt="{{filename}}">
+  <img style='max-width: 50%;' src="data:image/png;base64,{{ image_64  | safe }}" class="img-fluid col-sm rounded">
 
 <div class="col-sm">
   <h3 class="text-start" style="margin-top: 30px; color: #999; text-align: center;">The following items were identified:</h3>
@@ -15,25 +15,21 @@
       <thead>
           <tr>    
           <th scope="col">Receipt item</th>
-          <!--<th scope="col">Total</th>-->
-          <!--<th scope="col">Quantity</th>-->
           <th scope="col">Matched product</th>
           <th scope="col"><a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="left" data-bs-title="Details:" data-bs-content="All numbers are estimated CO₂ equivalents in g." data-bs-container="body">CO₂Footprint</a></th>
           </tr>
       </thead>
         
   <!-- For loop logic of jinja template -->
-  {% for item in results %}
+  {% for index, row in results.iterrows() %}
     
   <!-- table rows -->
   <tr>
            
-      <td>{{item.description}}</td>
-      <!--<td>{{item.total}}</td>-->
-      <!--<td>{{item.quantity}}</td>-->
-      <td>{{item.product}}</td>
-      <td><a tabindex="0" href="#" data-bs-toggle="popover" data-bs-trigger="focus"  data-bs-placement="left" data-bs-title="Details:" data-bs-content="= {{item.quantity}} (quantity) * {{item.typical_footprint}} (typical footprint)">{{item.footprint}} <i class="bi bi-info-circle"></i></a></td>
-      <!-- <td><a href="#"><i class="bi bi-pencil"></i></a></td> -->
+      <td>{{row[0]}}</td>
+      <td>{{row[3]}}</td>
+      <td><a tabindex="0" href="#" data-bs-toggle="popover" data-bs-trigger="focus"  data-bs-placement="left" data-bs-title="Details:" data-bs-content="= {{row[1]|int}} (quantity) * {{row[4]|round|int}} (typical footprint)">{{row[10]}} <i class="bi bi-info-circle"></i></a></td>
+
         
     
   {% endfor %}
@@ -47,22 +43,7 @@
 
 </div>
 </div>
-<div class="container">
-<div class="row bg-light mb-3">
 
-  <div class="col-sm rounded mw-100">
-  {{ script | safe }}
-  {{ div | safe }}
-  </div>
-  <div class="col-sm bg-light rounded">
-    <h1>Total footprint: {{ total }} Kg CO₂e</h1>
-    <p></p>
- 
-    <p><i class="bi-speedometer2" style="font-size: 2rem"></i> This is equivalent to driving an average car for {{car_eq}} kilometers.</p>
-    <p><i class="bi-water" style="font-size: 2rem"></i> This is equivalent to showering warm for approximately {{shower_eq}} minutes.</p>
-  </div>
-</div>
-</div>
 
 
 

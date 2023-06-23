@@ -15,4 +15,4 @@ run:
   # Put your commands here.
   steps:
   - name: "Run"
-    command: "pipenv run python run2.py"
+    command: "pipenv run python run.py"
