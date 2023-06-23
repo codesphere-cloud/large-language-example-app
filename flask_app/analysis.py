@@ -74,10 +74,14 @@ def find_match_semantic(embeddings, product_description: str):
     return result
 
 
-def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, embedding_dict, cutoff: int = 80, cutoff_ai: int = 80):
+def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, col2: str, embedding_dict, cutoff: int = 80, cutoff_ai: int = 80, language: str = 'de'):
     # adding empty row
     df2 = df2.reindex(list(range(0, len(df2)+1))).reset_index(drop=True)
     index_of_empty = len(df2) - 1
+
+    # Context - provides the context for our large language models
+    if language == 'de': phrase='Auf dem Kassenzettel steht: ' 
+    else: phrase='The grocery item is: '
 
     # First attempt a fuzzy string based match = faster & cheaper than semantic match
     indexed_strings_dict = dict(enumerate(df2[col2]))
@@ -91,7 +95,7 @@ def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, co
             score_cutoff=cutoff
         )
         # If match below cutoff fetch semantic match
-        score, index = match[1:] if match is not None else find_match_semantic(embedding_dict,"The grocery receipt item is: "+s1)[1:]
+        score, index = match[1:] if match is not None else find_match_semantic(embedding_dict,phrase+s1)[1:]
         if score < cutoff_ai:
             index = index_of_empty 
         matched_indices.add(index)
@@ -127,8 +131,8 @@ def match_and_merge_combined(df1: pd.DataFrame, df2: pd.DataFrame, col1: str, co
 
     return merged_df 
 
-
-def analyze_receipt(image):
+# Call this function from the main route for the english analysis
+def analyze_receipt_en(image):
     # Load mapping table for fuzzy string mapping
     grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping_en.xlsx"), engine="openpyxl")
     ocr_result, store = azure_form_recognition(image)
@@ -137,7 +141,21 @@ def analyze_receipt(image):
     with open('./semantic_embedding_dict_en.json', 'r') as f:
         embeddings = json.load(f)
     # You can change the cutoff params here for higher / lower accuracy 
-    results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55)
+    results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55,"en")
+    results = results.fillna(0)
+
+    return results
+
+def analyze_receipt(image):
+    # Load mapping table for fuzzy string mapping
+    grocery_mapping = pd.read_excel(os.path.join(os.path.dirname(app.instance_path), "grocery_mapping.xlsx"), engine="openpyxl")
+    ocr_result, store = azure_form_recognition(image)
+
+    # Load semantic embedding dict for semantic mapping        
+    with open('./semantic_embedding_dict.json', 'r') as f:
+        embeddings = json.load(f)
+    # You can change the cutoff params here for higher / lower accuracy 
+    results = match_and_merge_combined(ocr_result,grocery_mapping,"description","product",embeddings,88,55,"de")
     results = results.fillna(0)
 
     return results
