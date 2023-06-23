@@ -1,18 +1,14 @@
 
 # Environments
 
+__pycache__
+
 env/
-
-rest/
-
-**/app.db
 
 /not_recognized.*
 
-receipt*
-
 .env
 
-flask_app/static/assets/
-
 pm/
+
+.vscode
